@@ -7,26 +7,35 @@ $passwordIngresada = $_POST['contrasenia'];
 
 $conexion = new RegistroUsuario();
 $usuarioE = $conexion->buscarUsuario($usuario); 
-$conexion->cerrarConexion();
 
-session_start();
+
+
 if ($usuarioE && password_verify($passwordIngresada, $usuarioE['password'])) {
-    
+    session_start();
+    $idUsuario = $usuarioE['idusuario_registrado'];
     switch ($usuarioE['tipo_usuario']) {
+
         case 'publicador':
-            //header("Location: ../../vista/publicador/vistaPublicador.php");
-            echo 'Usuario publicador encontrado';
+            $usuarioPublicador = $conexion->getPublicador($idUsuario);
+            $_SESSION['usuario'] = $usuarioPublicador;
+            header("Location: ../../vista/publicador/vistaPublicador.php");
+            $conexion->cerrarConexion();
             exit;
         case 'administrador':
+            $usuarioAdmin = $conexion->getAdministrador($idUsuario);
+            $_SESSION['usuario'] = $usuarioAdmin;
             //header("Location: ../../vista/administrador/vistaAdministrador.php");
-            echo 'Usuario administrador encontrado';
+            $conexion->cerrarConexion();
             exit;
         case 'participante':
+            $usuarioParticipante = $conexion->getParticipante($idUsuario);
+            $_SESSION['usuario'] = $usuarioParticipante;
             //header("Location: ../../vista/participante/vistaParticipante.php");
-            echo 'Usuario participante encontrado';
+            $conexion->cerrarConexion();
             exit;
         default:
             $error = "Tipo de usuarioE$usuarioE desconocido.";
+            $conexion->cerrarConexion();
             break;
     }
 } else {
