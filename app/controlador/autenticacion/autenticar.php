@@ -30,7 +30,7 @@ if ($usuarioE && password_verify($passwordIngresada, $usuarioE['password'])) {
         case 'participante':
             $usuarioParticipante = $conexion->getParticipante($idUsuario);
             $_SESSION['usuario'] = $usuarioParticipante;
-            //header("Location: ../../vista/participante/vistaParticipante.php");
+            header("Location: ../../vista/participante/vistaParticipante.php");
             $conexion->cerrarConexion();
             exit;
         default:

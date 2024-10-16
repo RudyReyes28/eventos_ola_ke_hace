@@ -12,6 +12,9 @@ $url = $_POST['url'];
 $cantCupo = $_POST['cant_cupo'];
 $tipoPublico = $_POST['tipo_publico'];
 
+if (preg_match('/^\d{2}:\d{2}$/', $hora)) {
+    $hora .= ':00';  // Agregamos los segundos
+}
 // Inicializar bandera de éxito
 $success = true;
 
@@ -61,6 +64,8 @@ foreach ($_FILES['contenido_archivo']['name'] as $index => $nombreArchivo) {
         $success = false;
     }
 }
+
+$crearPublicacion->cerrarConexion();
 
 ?>
 

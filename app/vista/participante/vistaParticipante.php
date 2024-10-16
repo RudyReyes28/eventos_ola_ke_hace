@@ -1,12 +1,12 @@
 <?php
-require_once '../../modelo/publicador_dao/ObtenerPublicacion.php';
+require_once '../../modelo/participante_dao/VerEventos.php';
 session_start();
 
 if (isset($_SESSION['usuario'])) {
-    $usuarioPublicador = $_SESSION['usuario'];
-    $idPublicador = $usuarioPublicador["idusuario_publicacion"];
-    $obtenerPublicaciones = new ObtenerPublicacion();
-    $publicaciones = $obtenerPublicaciones->obtenerPublicacionesPorUsuario($idPublicador);
+    $usuarioParticipante = $_SESSION['usuario'];
+    $idParticipante = $usuarioParticipante["idusuario_participante"];
+    $obtenerPublicaciones = new ObtenerEventos();
+    $publicaciones = $obtenerPublicaciones->verEventos();
     $obtenerPublicaciones->cerrarConexion();
 }
 
@@ -18,13 +18,13 @@ if (isset($_SESSION['usuario'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Publicador</title>
+    <title>Participante</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css" rel="stylesheet">
 </head>
 
 <body>
-    <?php include 'menuPublicador.php'; ?>
+    <?php include 'menuParticipante.php'; ?>
 
     <div class="container-fluid">
         <div class="row">
@@ -34,13 +34,13 @@ if (isset($_SESSION['usuario'])) {
                     <i class="bi bi-arrow-right-square-fill fs-3" data-bs-toggle="offcanvas" data-bs-target="#offcanvas"></i>
                 </button>
                 <div class="container mt-4">
-                    <h2>Mis Publicaciones</h2>
+                    <h2>Eventos/Publicaciones</h2>
                     <?php foreach ($publicaciones as $publicacion): ?>
                         <div class="card mb-3">
                             <div class="card-header">
                                 <h3>Lugar: <?= htmlspecialchars($publicacion->lugar); ?></h3>
                                 <small>Fecha: <?= htmlspecialchars($publicacion->fecha . ' Hora: ' . $publicacion->hora); ?></small>
-                                <p><strong>Estado:</strong> <?= htmlspecialchars($publicacion->estado ? $publicacion->estado : 'Desconocido'); ?></p>
+                                <p><strong>Invita:</strong> <?= htmlspecialchars($publicacion->publicador ? $publicacion->publicador : 'Desconocido'); ?></p>
                             </div>
                             <div class="card-body">
                                 <p><strong>Categoría:</strong> <?= htmlspecialchars($publicacion->categoria); ?></p>
@@ -48,7 +48,7 @@ if (isset($_SESSION['usuario'])) {
                                 <p><strong>Tipo de público:</strong> <?= htmlspecialchars($publicacion->tipoPublico); ?></p>
                                 <p><a href="<?= htmlspecialchars($publicacion->url); ?>">Ver más</a></p>
 
-                                <h4>Elementos de la Publicación</h4>
+                                <h4>Detalles</h4>
                                 <?php foreach ($publicacion->elementosPublicacion as $elemento): ?>
                                     <?php if ($elemento->tipoElemento == 'h1'): ?>
                                         <h1><?= htmlspecialchars($elemento->contenido); ?></h1>
@@ -75,8 +75,8 @@ if (isset($_SESSION['usuario'])) {
                                 <?php endforeach; ?>
                             </div>
                             <div class="card-footer">
-                                <button class="btn btn-warning">Editar</button>
-                                <button class="btn btn-danger">Eliminar</button>
+                                <button class="btn btn-warning">Asistir</button>
+                                <button class="btn btn-danger">Reportar</button>
                             </div>
                         </div>
                     <?php endforeach; ?>
