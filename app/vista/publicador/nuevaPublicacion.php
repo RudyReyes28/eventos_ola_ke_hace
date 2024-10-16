@@ -48,102 +48,95 @@
             </div>
             <!-- Elementos de la Publicación -->
             <h2>Agregar Elementos</h2>
-            <div id="elementos-container">
-                <div class="elemento mb-3">
-                    <div class="mb-3">
-                        <label for="tipo_elemento[]" class="form-label">Tipo de elemento</label>
-                        <select class="form-select tipo-elemento" name="tipo_elemento[]">
-                            <option value="h1">Título</option>
-                            <option value="p">Párrafo</option>
-                            <option value="video">Video</option>
-                            <option value="img">Imagen</option>
-                            <option value="audio">Audio</option>
-                        </select>
-                    </div>
-                    <div class="mb-3 contenido-elemento">
-                        <label for="contenido[]" class="form-label">Contenido</label>
-                        <textarea class="form-control" name="contenido[]"></textarea> <!-- Por defecto es un textarea -->
-                    </div>
-                </div>
-            </div>
-
-            <!-- Botón para agregar más elementos -->
-            <button type="button" class="btn btn-secondary mb-3" id="agregarElementoBtn">Agregar otro elemento</button>
-
-            <div class="mb-3">
-                <!-- Botón para crear la publicación -->
-                <button type="submit" class="btn btn-primary">Crear Publicación</button>
-            </div>
-            
-        </form>
+<div id="elementos-texto-container">
+    <h3>Elementos de Texto</h3>
+    <!-- Contenedor para elementos de texto -->
+    <div class="elemento-texto mb-3">
+        <label for="tipo_elemento_texto[]" class="form-label">Tipo de texto</label>
+        <select class="form-select tipo-elemento-texto" name="tipo_elemento_texto[]">
+            <option value="h1">Título</option>
+            <option value="p">Párrafo</option>
+        </select>
+        <div class="mb-3 contenido-elemento-texto">
+            <label for="contenido_texto[]" class="form-label">Contenido</label>
+            <textarea class="form-control" name="contenido_texto[]" rows="3"></textarea>
+        </div>
     </div>
+</div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // Función para cambiar el campo "contenido" según el tipo de elemento seleccionado
-        function cambiarCampoContenido(selectElement) {
-            const elementoContainer = selectElement.closest('.elemento');
-            const contenidoDiv = elementoContainer.querySelector('.contenido-elemento');
-            
-            // Borrar el contenido actual del div de contenido
-            contenidoDiv.innerHTML = '';
+<!-- Botón para agregar más elementos de texto -->
+<button type="button" class="btn btn-secondary mb-3" id="agregarElementoTextoBtn">Agregar otro elemento de texto</button>
 
-            // Obtener el valor seleccionado
-            const tipoElemento = selectElement.value;
+<hr>
 
-            // Generar el campo de contenido según el tipo de elemento
-            if (tipoElemento === 'h1' || tipoElemento === 'p') {
-                // Si es Título o Párrafo, mostrar textarea
-                contenidoDiv.innerHTML = `
-                    <label for="contenido[]" class="form-label">Contenido</label>
-                    <textarea class="form-control" name="contenido[]" rows="3"></textarea>
-                `;
-            } else {
-                // Si es video, img o audio, mostrar input de archivo
-                contenidoDiv.innerHTML = `
-                    <label for="contenido[]" class="form-label">Contenido</label>
-                    <input type="file" class="form-control" name="contenido[]">
-                `;
-            }
-        }
+<div id="elementos-archivo-container">
+    <h3>Elementos Multimedia</h3>
+    <!-- Contenedor para elementos de archivo -->
+    <div class="elemento-archivo mb-3">
+        <label for="tipo_elemento_archivo[]" class="form-label">Tipo de archivo</label>
+        <select class="form-select tipo-elemento-archivo" name="tipo_elemento_archivo[]">
+            <option value="video">Video</option>
+            <option value="img">Imagen</option>
+            <option value="audio">Audio</option>
+        </select>
+        <div class="mb-3 contenido-elemento-archivo">
+            <label for="contenido_archivo[]" class="form-label">Archivo</label>
+            <input type="file" class="form-control" name="contenido_archivo[]">
+        </div>
+    </div>
+</div>
 
-        // Llamar la función cuando se cambie el tipo de elemento
-        document.querySelectorAll('.tipo-elemento').forEach(select => {
-            select.addEventListener('change', function() {
-                cambiarCampoContenido(this);
-            });
-        });
+<!-- Botón para agregar más elementos multimedia -->
+<button type="button" class="btn btn-secondary mb-3" id="agregarElementoArchivoBtn">Agregar otro elemento multimedia</button>
 
-        // Función para agregar un nuevo conjunto de campos de elemento
-        document.getElementById('agregarElementoBtn').addEventListener('click', function() {
-            const container = document.getElementById('elementos-container');
-            const nuevoElemento = document.createElement('div');
-            nuevoElemento.classList.add('elemento', 'mb-3');
-            
-            nuevoElemento.innerHTML = `
-                <div class="mb-3">
-                    <label for="tipo_elemento[]" class="form-label">Tipo de elemento</label>
-                    <select class="form-select tipo-elemento" name="tipo_elemento[]">
-                        <option value="h1">Título</option>
-                        <option value="p">Párrafo</option>
-                        <option value="video">Video</option>
-                        <option value="img">Imagen</option>
-                        <option value="audio">Audio</option>
-                    </select>
-                </div>
-                <div class="mb-3 contenido-elemento">
-                    <label for="contenido[]" class="form-label">Contenido</label>
-                    <textarea class="form-control" name="contenido[]" rows="3"></textarea>
-                </div>
-            `;
+<div class="mb-3">
+    <!-- Botón para crear la publicación -->
+    <button type="submit" class="btn btn-primary">Crear Publicación</button>
+</div>
 
-            container.appendChild(nuevoElemento);
+<script>
+    // Función para agregar un nuevo conjunto de campos de texto
+    document.getElementById('agregarElementoTextoBtn').addEventListener('click', function() {
+        const containerTexto = document.getElementById('elementos-texto-container');
+        const nuevoElementoTexto = document.createElement('div');
+        nuevoElementoTexto.classList.add('elemento-texto', 'mb-3');
+        
+        nuevoElementoTexto.innerHTML = `
+            <label for="tipo_elemento_texto[]" class="form-label">Tipo de texto</label>
+            <select class="form-select tipo-elemento-texto" name="tipo_elemento_texto[]">
+                <option value="h1">Título</option>
+                <option value="p">Párrafo</option>
+            </select>
+            <div class="mb-3 contenido-elemento-texto">
+                <label for="contenido_texto[]" class="form-label">Contenido</label>
+                <textarea class="form-control" name="contenido_texto[]" rows="3"></textarea>
+            </div>
+        `;
 
-            // Agregar el listener para el nuevo select agregado
-            nuevoElemento.querySelector('.tipo-elemento').addEventListener('change', function() {
-                cambiarCampoContenido(this);
-            });
-        });
-    </script>
+        containerTexto.appendChild(nuevoElementoTexto);
+    });
+
+    // Función para agregar un nuevo conjunto de campos de archivo
+    document.getElementById('agregarElementoArchivoBtn').addEventListener('click', function() {
+        const containerArchivo = document.getElementById('elementos-archivo-container');
+        const nuevoElementoArchivo = document.createElement('div');
+        nuevoElementoArchivo.classList.add('elemento-archivo', 'mb-3');
+        
+        nuevoElementoArchivo.innerHTML = `
+            <label for="tipo_elemento_archivo[]" class="form-label">Tipo de archivo</label>
+            <select class="form-select tipo-elemento-archivo" name="tipo_elemento_archivo[]">
+                <option value="video">Video</option>
+                <option value="img">Imagen</option>
+                <option value="audio">Audio</option>
+            </select>
+            <div class="mb-3 contenido-elemento-archivo">
+                <label for="contenido_archivo[]" class="form-label">Archivo</label>
+                <input type="file" class="form-control" name="contenido_archivo[]">
+            </div>
+        `;
+
+        containerArchivo.appendChild(nuevoElementoArchivo);
+    });
+</script>
 </body>
 </html>

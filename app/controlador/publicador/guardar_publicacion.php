@@ -1,43 +1,113 @@
 <?php
-// Este archivo es guardar_publicacion.php
+require_once '../../modelo/publicador_dao/CrearPublicacion.php';
 session_start();
 $usuarioPublicador = $_SESSION['usuario'];
 $nombreUsuario = $usuarioPublicador["nombre_c"];
-echo" nombre usuario".$nombreUsuario."<br>";
+$idPublicador = $usuarioPublicador["idusuario_publicacion"];
+$lugar = $_POST['lugar'];
+$fecha = $_POST['fecha'];
+$hora = $_POST['hora'];
+$categoria = $_POST['categoria'];
+$url = $_POST['url'];
+$cantCupo = $_POST['cant_cupo'];
+$tipoPublico = $_POST['tipo_publico'];
 
-// Imprimir los datos de la publicación
-echo "<h1>Datos de la Publicación</h1>";
-echo "Lugar: " . $_POST['lugar'] . "<br>";
-echo "Fecha: " . $_POST['fecha'] . "<br>";
-echo "Hora: " . $_POST['hora'] . "<br>";
-echo "Categoría: " . $_POST['categoria'] . "<br>";
-echo "URL: " . $_POST['url'] . "<br>";
-echo "Cantidad de Cupo: " . $_POST['cant_cupo'] . "<br>";
-echo "Tipo de Público: " . $_POST['tipo_publico'] . "<br>";
+// Inicializar bandera de éxito
+$success = true;
 
-// Imprimir los elementos de la publicación (h1, p, video, img, audio)
-echo "<h2>Elementos de la Publicación</h2>";
+// Crear la publicación
+$crearPublicacion = new CrearPublicacion();
+$idPublicacion = $crearPublicacion->crearPublicacion($lugar, $fecha, $hora, $idPublicador, $categoria, $url, $cantCupo, $tipoPublico);
 
-$tiposElementos = $_POST['tipo_elemento'];
-$contenidos = $_POST['contenido'];
+if (!$idPublicacion) {
+    $success = false; // Si la creación falla, marcar como falso
+}
 
-// Recorrer todos los elementos agregados
-foreach ($tiposElementos as $index => $tipoElemento) {
-    echo "<strong>Tipo de Elemento: </strong>" . $tipoElemento . "<br>";
+// Procesar los elementos de texto
+$tiposElementosTexto = $_POST['tipo_elemento_texto'];
+$contenidoTexto = $_POST['contenido_texto'];
 
+foreach ($tiposElementosTexto as $index => $tipoElemento) {
     if ($tipoElemento === 'h1' || $tipoElemento === 'p') {
-        // Mostrar texto para títulos y párrafos
-        echo "<strong>Contenido: </strong>" . htmlspecialchars($contenidos[$index]) . "<br>";
-    } else {
-        // Mostrar el archivo subido para imágenes, videos y audios
-        if (isset($_FILES['contenido']['name'][$index]) && $_FILES['contenido']['error'][$index] == 0) {
-            $nombreArchivo = $_FILES['contenido']['name'][$index];
-            echo "<strong>Archivo subido: </strong>" . htmlspecialchars($nombreArchivo) . "<br>";
-        } else {
-            echo "<strong>Error subiendo el archivo.</strong><br>";
+        $realizado = $crearPublicacion->agregarElementosPublicacion($idPublicacion, $tipoElemento, $contenidoTexto[$index]);
+        if (!$realizado) {
+            $success = false; 
         }
     }
-
-    echo "<hr>";
 }
+
+// Procesar los elementos de archivos
+$tipoElementoFile = $_POST['tipo_elemento_archivo'];
+$directorioDestino = 'uploads/'; 
+
+if (!is_dir($directorioDestino)) {
+    mkdir($directorioDestino, 0755, true);
+}
+
+foreach ($_FILES['contenido_archivo']['name'] as $index => $nombreArchivo) {
+    if ($_FILES['contenido_archivo']['error'][$index] == 0) {
+        $nombreTemporal = $_FILES['contenido_archivo']['tmp_name'][$index];
+        $nombreFinal = $directorioDestino . basename($nombreArchivo);
+
+        if (move_uploaded_file($nombreTemporal, $nombreFinal)) {
+            $realizado = $crearPublicacion->agregarElementosPublicacion($idPublicacion, $tipoElementoFile[$index], $nombreFinal);
+            if (!$realizado) {
+                $success = false;
+            }
+        } else {
+            $success = false; 
+        }
+    } else {
+        $success = false;
+    }
+}
+
 ?>
+
+<!-- HTML para confirmar la creación -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmación de Publicación</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f7f7;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        h1 {
+            color: #4CAF50;
+        }
+        .error {
+            color: #e74c3c;
+        }
+        .success {
+            color: #2ecc71;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <?php if ($success): ?>
+            <h1 class="success">¡Publicación creada con éxito!</h1>
+            <p>La publicación fue registrada correctamente con todos los elementos.</p>
+        <?php else: ?>
+            <h1 class="error">Error al crear la publicación</h1>
+            <p>Ocurrió un error durante el proceso de creación. Por favor, intenta nuevamente.</p>
+        <?php endif; ?>
+        <a href="../../vista/publicador/vistaPublicador.php">Volver al inicio</a>
+    </div>
+</body>
+</html>

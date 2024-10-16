@@ -27,6 +27,7 @@ class RegistroUsuario
             return $resultado->fetch_assoc();
         }
     
+        $stmt->close();
         // Si no se encuentra el usuario
         return null;
     }
@@ -45,7 +46,7 @@ class RegistroUsuario
         if($resultado->num_rows > 0){
             return $resultado->fetch_assoc();
         }
-    
+        $stmt->close();
         // Si no se encuentra el usuario
         return null;
     }
@@ -65,6 +66,7 @@ class RegistroUsuario
             return $resultado->fetch_assoc();
         }
     
+        $stmt->close();
         // Si no se encuentra el usuario
         return null;
     }
@@ -83,6 +85,7 @@ class RegistroUsuario
         if($resultado->num_rows > 0){
             return $resultado->fetch_assoc();
         }
+        $stmt->close();
     
         // Si no se encuentra el usuario
         return null;
