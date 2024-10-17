@@ -1,5 +1,6 @@
 <?php
 require_once '../../modelo/participante_dao/VerEventos.php';
+require_once '../../modelo/participante_dao/ReportePublicacion.php';
 session_start();
 
 if (isset($_SESSION['usuario'])) {
@@ -8,6 +9,11 @@ if (isset($_SESSION['usuario'])) {
     $obtenerPublicaciones = new ObtenerEventos();
     $publicaciones = $obtenerPublicaciones->verEventos();
     $obtenerPublicaciones->cerrarConexion();
+
+    $modeloReporte = new ReportePublicacion();
+    $reportes = $modeloReporte->getReporte($idParticipante);
+    $reportes = array_column($reportes, 'id_publicacion');
+    $modeloReporte->cerrarConexion();
 }
 
 ?>
@@ -63,7 +69,7 @@ if (isset($_SESSION['usuario'])) {
                                             <source src="../../controlador/publicador/<?= htmlspecialchars($elemento->contenido); ?>" type="video/mp4">
                                             Tu navegador no soporta la reproducción de videos.
                                         </video>
-                                    <?php elseif (strpos($elemento->contenido, '.mp3') !== false|| strpos($elemento->contenido, '.m4a') !== false): ?>
+                                    <?php elseif (strpos($elemento->contenido, '.mp3') !== false || strpos($elemento->contenido, '.m4a') !== false): ?>
                                         <!-- Mostrar audios -->
                                         <audio controls>
                                             <source src="../../controlador/publicador/<?= htmlspecialchars($elemento->contenido); ?>" type="audio/mpeg">
@@ -76,10 +82,41 @@ if (isset($_SESSION['usuario'])) {
                             </div>
                             <div class="card-footer">
                                 <button class="btn btn-warning">Asistir</button>
-                                <button class="btn btn-danger">Reportar</button>
+                                <!-- Verificar si el usuario ya reportó esta publicación -->
+                                <?php if (in_array($publicacion->idPublicacion, $reportes)): ?>
+                                    <!-- Si ya ha sido reportada -->
+                                    <button class="btn btn-secondary" disabled>Reportado</button>
+                                <?php else: ?>
+                                    <!-- Si no ha sido reportada, habilitar botón -->
+                                    <button class="btn btn-danger" data-toggle="modal" data-target="#modalReporte" data-idpublicacion="<?= $publicacion->idPublicacion; ?>">Reportar</button>
+                                <?php endif; ?>
                             </div>
                         </div>
                     <?php endforeach; ?>
+
+                    <!-- Modal para reportar la publicación -->
+                    <div class="modal fade" id="modalReporte" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel">Reportar Publicación</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <form id="formReporte" action="../../controlador/participante/reportarPublicacion.php" method="POST">
+                                        <input type="hidden" id="id_publicacion" name="id_publicacion" value="">
+                                        <div class="form-group">
+                                            <label for="motivo_reporte">Motivo del reporte:</label>
+                                            <textarea class="form-control" id="motivo_reporte" name="motivo_reporte" rows="3" required></textarea>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">Enviar Reporte</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -90,7 +127,22 @@ if (isset($_SESSION['usuario'])) {
     </div>
 
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>  
+
+    <script>
+        $('#modalReporte').on('show.bs.modal', function(event) {
+            var button = $(event.relatedTarget); // Botón que disparó el modal
+            var idPublicacion = button.data('idpublicacion'); // Extraer el ID de la publicación
+            var modal = $(this);
+            console.log(idPublicacion);
+            modal.find('#id_publicacion').val(idPublicacion); // Insertar el ID en el formulario del modal
+        });
+    </script>
+
 </body>
 
 </html>
