@@ -11,7 +11,12 @@ class Publicacion {
     public $tipoPublico;
 
     public $estado;
+
+    public $idEventoAsistido;
+    public $cantReportes;
     public $elementosPublicacion = [];
+
+    public $motivoReportes = [];
 
     public function __construct($id, $lugar, $fecha, $hora, $categoria, $url, $cantCupo, $tipoPublico, $publicador, $estado) {
         $this->idPublicacion = $id;
@@ -28,6 +33,10 @@ class Publicacion {
 
     public function agregarElementoPublicacion($elemento) {
         $this->elementosPublicacion[] = $elemento;
+    }
+
+    public function agregarMotivoReporte($motivo) {
+        $this->motivoReportes[] = $motivo;
     }
 }
 

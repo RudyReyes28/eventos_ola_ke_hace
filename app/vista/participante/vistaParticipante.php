@@ -1,6 +1,7 @@
 <?php
 require_once '../../modelo/participante_dao/VerEventos.php';
 require_once '../../modelo/participante_dao/ReportePublicacion.php';
+require_once '../../modelo/participante_dao/AsistirEventoDAO.php';
 session_start();
 
 if (isset($_SESSION['usuario'])) {
@@ -14,6 +15,15 @@ if (isset($_SESSION['usuario'])) {
     $reportes = $modeloReporte->getReporte($idParticipante);
     $reportes = array_column($reportes, 'id_publicacion');
     $modeloReporte->cerrarConexion();
+
+    $modeloAsistirEvento = new AsistirEventoDAO();
+    $eventosAsistidos = $modeloAsistirEvento->getEventosAsistidos($idParticipante);
+    $eventosAsistidos = array_column($eventosAsistidos, 'id_publicacion');
+
+   
+    $cantidadEventos = $modeloAsistirEvento->cantidadMisEventos($idParticipante);
+    $modeloAsistirEvento->cerrarConexion();
+
 }
 
 ?>
@@ -81,7 +91,14 @@ if (isset($_SESSION['usuario'])) {
                                 <?php endforeach; ?>
                             </div>
                             <div class="card-footer">
-                                <button class="btn btn-warning">Asistir</button>
+                                <?php if (in_array($publicacion->idPublicacion, $eventosAsistidos)): ?>
+                                    <!-- Si ya ha sido asistida -->
+                                    <button class="btn btn-primary" disabled>Asistiendo</button>
+                                <?php else: ?>
+                                    <!-- Si no ha sido asistido -->
+                                    <button class="btn btn-warning" data-toggle="modal" data-target="#modalAsistir" data-idpublicacion="<?= $publicacion->idPublicacion; ?>">Asistir</button>
+                                <?php endif; ?>
+                                
                                 <!-- Verificar si el usuario ya reportó esta publicación -->
                                 <?php if (in_array($publicacion->idPublicacion, $reportes)): ?>
                                     <!-- Si ya ha sido reportada -->
@@ -117,6 +134,27 @@ if (isset($_SESSION['usuario'])) {
                             </div>
                         </div>
                     </div>
+
+                    <!-- Modal para asistir evento -->
+                    <div class="modal fade" id="modalAsistir" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel">Asistir Evento</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <form id="formReporte" action="../../controlador/participante/asistirEvento.php" method="POST">
+                                        <input type="hidden" id="id_publicacionA" name="id_publicacionA" value="">
+                                        
+                                        <button type="submit" class="btn btn-primary">Asistir Evento</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -125,6 +163,9 @@ if (isset($_SESSION['usuario'])) {
 
 
     </div>
+
+    
+</div>
 
 
 
@@ -135,12 +176,22 @@ if (isset($_SESSION['usuario'])) {
 
     <script>
         $('#modalReporte').on('show.bs.modal', function(event) {
-            var button = $(event.relatedTarget); // Botón que disparó el modal
+            var button = $(event.relatedTarget);
             var idPublicacion = button.data('idpublicacion'); // Extraer el ID de la publicación
             var modal = $(this);
             console.log(idPublicacion);
             modal.find('#id_publicacion').val(idPublicacion); // Insertar el ID en el formulario del modal
         });
+
+        $('#modalAsistir').on('show.bs.modal', function(event) {
+            var button = $(event.relatedTarget);
+            var idPublicacion = button.data('idpublicacion'); // Extraer el ID de la publicación
+            var modal = $(this);
+            console.log(idPublicacion);
+            modal.find('#id_publicacionA').val(idPublicacion); // Insertar el ID en el formulario del modal
+        });
+
+        
     </script>
 
 </body>

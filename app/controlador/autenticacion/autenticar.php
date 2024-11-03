@@ -24,7 +24,7 @@ if ($usuarioE && password_verify($passwordIngresada, $usuarioE['password'])) {
         case 'administrador':
             $usuarioAdmin = $conexion->getAdministrador($idUsuario);
             $_SESSION['usuario'] = $usuarioAdmin;
-            //header("Location: ../../vista/administrador/vistaAdministrador.php");
+            header("Location: ../../vista/administrador/vistaAdministrador.php");
             $conexion->cerrarConexion();
             exit;
         case 'participante':

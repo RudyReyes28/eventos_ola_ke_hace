@@ -17,8 +17,6 @@
                 </a>
                 <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdown">
                     <li><a class="dropdown-item" href="nuevaPublicacion.php">Nueva Publicacion...</a></li>
-                    <li><a class="dropdown-item" href="#">Editar Publicacion</a></li>
-                    <li><a class="dropdown-item" href="#">Eliminar Publicacion</a></li>
                     
                 </ul>
             </li>
