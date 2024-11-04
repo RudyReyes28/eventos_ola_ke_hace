@@ -15,6 +15,7 @@ $tipoPublico = $_POST['tipo_publico'];
 if (preg_match('/^\d{2}:\d{2}$/', $hora)) {
     $hora .= ':00';  // Agregamos los segundos
 }
+
 // Inicializar bandera de éxito
 $success = true;
 
@@ -39,30 +40,35 @@ foreach ($tiposElementosTexto as $index => $tipoElemento) {
     }
 }
 
-// Procesar los elementos de archivos
-$tipoElementoFile = $_POST['tipo_elemento_archivo'];
-$directorioDestino = 'uploads/'; 
+// Procesar los elementos de archivos solo si se han subido archivos
+if (isset($_FILES['contenido_archivo']) && !empty($_FILES['contenido_archivo']['name'][0])) {
+    $tipoElementoFile = $_POST['tipo_elemento_archivo'];
+    $directorioDestino = 'uploads/';
 
-if (!is_dir($directorioDestino)) {
-    mkdir($directorioDestino, 0755, true);
-}
+    if (!is_dir($directorioDestino)) {
+        mkdir($directorioDestino, 0755, true);
+    }
 
-foreach ($_FILES['contenido_archivo']['name'] as $index => $nombreArchivo) {
-    if ($_FILES['contenido_archivo']['error'][$index] == 0) {
-        $nombreTemporal = $_FILES['contenido_archivo']['tmp_name'][$index];
-        $nombreFinal = $directorioDestino . basename($nombreArchivo);
+    foreach ($_FILES['contenido_archivo']['name'] as $index => $nombreArchivo) {
+        if ($_FILES['contenido_archivo']['error'][$index] == 0) {
+            $nombreTemporal = $_FILES['contenido_archivo']['tmp_name'][$index];
+            $nombreFinal = $directorioDestino . basename($nombreArchivo);
 
-        if (move_uploaded_file($nombreTemporal, $nombreFinal)) {
-            $realizado = $crearPublicacion->agregarElementosPublicacion($idPublicacion, $tipoElementoFile[$index], $nombreFinal);
-            if (!$realizado) {
+            if (move_uploaded_file($nombreTemporal, $nombreFinal)) {
+                $realizado = $crearPublicacion->agregarElementosPublicacion($idPublicacion, $tipoElementoFile[$index], $nombreFinal);
+                if (!$realizado) {
+                    $success = false;
+                }
+            } else {
                 $success = false;
             }
         } else {
-            $success = false; 
+            $success = false;
         }
-    } else {
-        $success = false;
     }
+} else {
+    // No se subieron archivos
+    $success = true; // O establece un mensaje indicando que no hay archivos
 }
 
 $crearPublicacion->cerrarConexion();
