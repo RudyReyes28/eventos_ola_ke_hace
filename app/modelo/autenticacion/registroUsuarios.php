@@ -90,6 +90,25 @@ class RegistroUsuario
         // Si no se encuentra el usuario
         return null;
     }
+
+    public function registrarUsuarioPublicador($nombreC, $usuario, $contrasena){
+        $conexion = $this->conectar->getConexion();
+        $sql = "SELECT registrar_usuario_publicador(?, ?, ?)";
+        $stmt = $conexion->prepare($sql);
+        $stmt->bind_param("sss", $nombreC, $usuario, $contrasena);
+        $stmt->execute();
+        $stmt->close();
+    }
+
+    public function registrarUsuarioParticipante($nombreC, $usuario, $contrasena){
+        $conexion = $this->conectar->getConexion();
+        $sql = "SELECT registrar_usuario_participante(?, ?, ?)";
+        $stmt = $conexion->prepare($sql);
+        $stmt->bind_param("sss", $nombreC, $usuario, $contrasena);
+        $stmt->execute();
+        $stmt->close();
+    }
+
     public function cerrarConexion()
     {
         $this->conectar->cerrarConexion();

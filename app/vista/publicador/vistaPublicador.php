@@ -8,6 +8,7 @@ if (isset($_SESSION['usuario'])) {
     $obtenerPublicaciones = new ObtenerPublicacion();
     $publicaciones = $obtenerPublicaciones->obtenerPublicacionesPorUsuario($idPublicador);
     $obtenerPublicaciones->cerrarConexion();
+    $estadoBan = $usuarioPublicador["estado_ban"];
 }
 
 ?>
@@ -74,10 +75,7 @@ if (isset($_SESSION['usuario'])) {
                                     <?php endif; ?>
                                 <?php endforeach; ?>
                             </div>
-                            <div class="card-footer">
-                                <button class="btn btn-warning">Editar</button>
-                                <button class="btn btn-danger">Eliminar</button>
-                            </div>
+                            
                         </div>
                     <?php endforeach; ?>
                 </div>

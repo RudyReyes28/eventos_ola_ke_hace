@@ -58,7 +58,7 @@
                                     <p class="mb-3 pb-lg-2" style="color: #393f81;">No tiene una cuenta? <a href="registrarUsuario.php"
                                             style="color: #393f81;">Registrar Aqui</a></p>
 
-                                    <p class="mb-2 pb-lg-2" style="color: #393f81;">Namas anda viendo? <a href="registrarUsuario.php"
+                                    <p class="mb-2 pb-lg-2" style="color: #393f81;">Namas anda viendo? <a href="../visitante/vistaVisitante.php"
                                             style="color: #393f81;">Entre aqui</a></p>
 
                                 </div>

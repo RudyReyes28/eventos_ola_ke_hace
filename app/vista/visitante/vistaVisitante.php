@@ -1,23 +1,16 @@
 <?php
-require_once '../../modelo/administrador_dao/PublicacionesDAO.php';
-session_start();
+require_once '../../modelo/participante_dao/VerEventos.php';
+require_once '../../modelo/participante_dao/ReportePublicacion.php';
+require_once '../../modelo/participante_dao/AsistirEventoDAO.php';
 
-if (isset($_SESSION['usuario'])) {
-    $usuarioParticipante = $_SESSION['usuario'];
-    $idParticipante = $usuarioParticipante["idusuario_admin"];
-    
-    
-    $verPublicaciones = new PublicacionesDAO();
-    $publicaciones = $verPublicaciones->verPublicacionesReportadas();
-    $cantidadAprobaciones = $verPublicaciones->cantidadAprobaciones();
-    $cantidadReportes = $verPublicaciones->cantidadReportes();
-    $verPublicaciones->cerrarConexion();
+    $obtenerPublicaciones = new ObtenerEventos();
+    $publicaciones = $obtenerPublicaciones->verEventos();
+    $obtenerPublicaciones->cerrarConexion();
 
+   
 
-}
 
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -25,36 +18,25 @@ if (isset($_SESSION['usuario'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Publicaciones Reportadas</title>
+    <title>Eventos</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css" rel="stylesheet">
 </head>
 
 <body>
-    <?php include 'menuAdmin.php'; ?>
 
     <div class="container-fluid">
         <div class="row">
             <div class="col min-vh-100 py-3">
-                <!-- toggler -->
-                <button class="btn float-end" data-bs-toggle="offcanvas" data-bs-target="#offcanvas" role="button">
-                    <i class="bi bi-arrow-right-square-fill fs-3" data-bs-toggle="offcanvas" data-bs-target="#offcanvas"></i>
-                </button>
+               
                 <div class="container mt-4">
-                    <h2>Publicaciones Reportadas</h2>
+                    <h2>Eventos/Publicaciones</h2>
                     <?php foreach ($publicaciones as $publicacion): ?>
                         <div class="card mb-3">
                             <div class="card-header">
-                                <h6><?= htmlspecialchars($publicacion->publicador); ?></h6>
-                                <h6>Lugar: <?= htmlspecialchars($publicacion->lugar); ?></h6>
-                                <h6>Cantidad de Reportes: <?= htmlspecialchars($publicacion->cantReportes)?></h6>
-                                <h6>Fecha: <?= htmlspecialchars($publicacion->fecha . ' Hora: ' . $publicacion->hora); ?></h6>
-                                <p><strong>Estado:</strong> <?= htmlspecialchars($publicacion->estado ? $publicacion->estado : 'Desconocido'); ?></p>
-                                <p><strong>Motivos de Reportes:</strong></p>
-                                
-                                <?php foreach ($publicacion->motivoReportes as $motivo): ?>
-                                    <p><?= htmlspecialchars($motivo); ?></p>
-                                <?php endforeach; ?>
+                                <h3>Lugar: <?= htmlspecialchars($publicacion->lugar); ?></h3>
+                                <small>Fecha: <?= htmlspecialchars($publicacion->fecha . ' Hora: ' . $publicacion->hora); ?></small>
+                                <p><strong>Invita:</strong> <?= htmlspecialchars($publicacion->publicador ? $publicacion->publicador : 'Desconocido'); ?></p>
                             </div>
                             <div class="card-body">
                                 <p><strong>Categoría:</strong> <?= htmlspecialchars($publicacion->categoria); ?></p>
@@ -62,7 +44,7 @@ if (isset($_SESSION['usuario'])) {
                                 <p><strong>Tipo de público:</strong> <?= htmlspecialchars($publicacion->tipoPublico); ?></p>
                                 <p><a href="<?= htmlspecialchars($publicacion->url); ?>">Ver más</a></p>
 
-                                <h4>Elementos de la Publicación</h4>
+                                <h4>Detalles</h4>
                                 <?php foreach ($publicacion->elementosPublicacion as $elemento): ?>
                                     <?php if ($elemento->tipoElemento == 'h1'): ?>
                                         <h1><?= htmlspecialchars($elemento->contenido); ?></h1>
@@ -77,7 +59,7 @@ if (isset($_SESSION['usuario'])) {
                                             <source src="../../controlador/publicador/<?= htmlspecialchars($elemento->contenido); ?>" type="video/mp4">
                                             Tu navegador no soporta la reproducción de videos.
                                         </video>
-                                    <?php elseif (strpos($elemento->contenido, '.mp3') !== false|| strpos($elemento->contenido, '.m4a') !== false): ?>
+                                    <?php elseif (strpos($elemento->contenido, '.mp3') !== false || strpos($elemento->contenido, '.m4a') !== false): ?>
                                         <!-- Mostrar audios -->
                                         <audio controls>
                                             <source src="../../controlador/publicador/<?= htmlspecialchars($elemento->contenido); ?>" type="audio/mpeg">
@@ -88,33 +70,40 @@ if (isset($_SESSION['usuario'])) {
                                     <?php endif; ?>
                                 <?php endforeach; ?>
                             </div>
-
-                            <div class="card-footer d-flex justify-content-between">
-                                <form action="../../controlador/administrador/manejoReportes.php" method="post" >
-                                    <input type="hidden" name="id_publicacion" value="<?= htmlspecialchars($publicacion->idPublicacion); ?>">
-                                    <input type="hidden" name="estado" value="aprobado">
-                                    <button type="submit" class="btn btn-warning">Aceptar Reporte</button>
-                                </form>
-                                <form action="../../controlador/administrador/manejoReportes.php" method="post">
-                                    <input type="hidden" name="id_publicacion" value="<?= htmlspecialchars($publicacion->idPublicacion); ?>">
-                                    <input type="hidden" name="estado" value="rechazado">
-                                    <button type="submit" class="btn btn-danger">Rechazar Reporte</button>
-                                </form>
-                            </div>
                             
                         </div>
                     <?php endforeach; ?>
+
+                    
                 </div>
             </div>
 
 
         </div>
 
+        
+
+
 
     </div>
 
+    <!-- regresar al login -->
+    <div class="container">
+            <div class="row">
+                <div class="col">
+                    <a href="../login/login.php" class="btn btn-primary">Salir</a>
+                </div>
+            </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>  
+
+    
+
 </body>
 
 </html>

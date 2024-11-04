@@ -154,6 +154,39 @@ class PublicacionesDAO{
         return $publicaciones;
     }
 
+    public function aprobarPublicacion($idPublicacion){
+        $conexion = $this->conectar->getConexion();
+        $sql = "SELECT aprobar_publicacion(?)";
+        $stmt = $conexion->prepare($sql);
+        $stmt->bind_param("i", $idPublicacion);
+        $stmt->execute();
+
+    }
+
+    public function rechazarPublicacion($idPublicacion){
+        $conexion = $this->conectar->getConexion();
+        $sql = "UPDATE publicacion SET estado = 'rechazado' WHERE idpublicacion = ?";
+        $stmt = $conexion->prepare($sql);
+        $stmt->bind_param("i", $idPublicacion);
+        $stmt->execute();
+    }
+
+    public function aprobarReporte($idPublicacion){
+        $conexion = $this->conectar->getConexion();
+        $sql = "SELECT aprobarReportePublicacion(?)";
+        $stmt = $conexion->prepare($sql);
+        $stmt->bind_param("i", $idPublicacion);
+        $stmt->execute();
+    }
+
+    public function rechazarReporte($idPublicacion){
+        $conexion = $this->conectar->getConexion();
+        $sql = "UPDATE reporte_publicacion SET reporte_aprobado = 'rechazado' WHERE id_publicacion = ? AND reporte_aprobado = 'pendiente'";
+        $stmt = $conexion->prepare($sql);
+        $stmt->bind_param("i", $idPublicacion);
+        $stmt->execute();
+    }
+
     public function cerrarConexion()
     {
         $this->conectar->cerrarConexion();

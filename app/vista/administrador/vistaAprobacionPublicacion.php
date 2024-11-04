@@ -82,9 +82,17 @@ if (isset($_SESSION['usuario'])) {
                                     <?php endif; ?>
                                 <?php endforeach; ?>
                             </div>
-                            <div class="card-footer">
-                                <button class="btn btn-warning">Aprobar Publicacion</button>
-                                <button class="btn btn-danger">Rechazar Publicacion</button>
+                            <div class="card-footer d-flex justify-content-between">
+                                <form action="../../controlador/administrador/manejoAprobaciones.php" method="post" >
+                                    <input type="hidden" name="id_publicacion" value="<?= htmlspecialchars($publicacion->idPublicacion); ?>">
+                                    <input type="hidden" name="estado" value="aprobado">
+                                    <button type="submit" class="btn btn-warning">Aprobar Publicacion</button>
+                                </form>
+                                <form action="../../controlador/administrador/manejoAprobaciones.php" method="post">
+                                    <input type="hidden" name="id_publicacion" value="<?= htmlspecialchars($publicacion->idPublicacion); ?>">
+                                    <input type="hidden" name="estado" value="rechazado">
+                                    <button type="submit" class="btn btn-danger">Rechazar Publicacion</button>
+                                </form>
                             </div>
                             
                         </div>
